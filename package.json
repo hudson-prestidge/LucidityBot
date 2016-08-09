@@ -1,0 +1,23 @@
+{
+  "name": "LucidityBot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/hudson-prestidge/LucidityBot.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/hudson-prestidge/LucidityBot/issues"
+  },
+  "homepage": "https://github.com/hudson-prestidge/LucidityBot#readme",
+  "dependencies": {
+    "irc": "^0.5.0"
+  }
+}
