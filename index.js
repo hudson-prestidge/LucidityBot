@@ -1,7 +1,7 @@
 var irc = require('irc');
 var passwords = require('./password')
 
-var commands = ['!test']
+var commands = ['!lucitest']
 
 var client = new irc.Client('irc.chat.twitch.tv', 'LucidityBot', {
   channels: ['#charcon'],
@@ -15,7 +15,9 @@ client.join("#charcon", function (res, err){
 
 client.addListener('message', function (from, to, message) {
     // client.say("#charcon", from + ", I am hearing you talk!")
-    if(c)
+    if(checkIsCommand(message)){
+      client.say("#charcon", "you are calling the " + checkIsCommand(message) + " command!"  )
+    }
 });
 
 // client.addListener('pm', function (from, message) {
@@ -31,3 +33,14 @@ client.addListener('message', function (from, to, message) {
 client.addListener('error', function(message) {
     console.log('error: ', message);
 });
+
+function checkIsCommand (message){
+  var startOfMessage = ''
+  for (var i = 0; i < commands.length; i++){
+    startOfMessage = message.substring(0, commands[i].length)
+    if (startOfMessage == commands[i]){
+      return commands[i]
+    }
+  }
+  return false
+ }
