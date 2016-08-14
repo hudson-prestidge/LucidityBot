@@ -18,31 +18,28 @@ client.join("#Charcon", function (res, err){
 })
 
 client.addListener('message', function (from, to, message) {
-  checkForCommand(message)
-    // client.say("#Charcon", from + ", I am hearing you talk!")
-    // if(checkForCommand(message)){
-    //   client.say("#Charcon", "you are calling the " + checkForCommand(message) + " command!"  )
-    // }
+
+  var promise = checkForCommand(message)
+  promise.then(function(command) {
+    console.log(command)
+    if(command) {
+      client.say("#Charcon", command.response)
+    }
+  })
+
+
 });
+
+function checkForCommand(message) {
+  var match = message.match(/!(\w+)/)
+  if (match){
+    firstWord = match[1]
+    return knex('commands')
+    .where('name', firstWord)
+    .first()
+  }
+}
 
 client.addListener('error', function(message) {
     console.log('error: ', message);
 });
-
- //essentially what we want is check the text you've just seen for a command
-  // this means go through the commands, and check if the substring at the start
-  // of the message matches that command. If it does, the message contains that command.
-
-  function checkForCommand(message) {
-    // var firstword = message.split(' ')[0]
-    var match = message.match(/!(\w+)/)
-    if (match){
-      firstWord = match[1]
-      knex('commands')
-      .where('name', firstWord)
-      .first()
-      .then(function(command){
-        client.say("#Charcon", command.response)
-      })
-    }
-  }
