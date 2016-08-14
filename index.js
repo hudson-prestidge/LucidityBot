@@ -3,11 +3,6 @@ var passwords = require('./password')
 var config = require('./knexfile').development
 var knex = require('knex')(config)
 
-knex('commands')
-  .then(function(commands){
-    console.log("these are all the commands!", commands)
-  })
-
 var client = new irc.Client('irc.chat.twitch.tv', 'LucidityBot', {
   channels: ['#Charcon'],
   password: passwords.twitchPassword,
@@ -18,7 +13,6 @@ client.join("#Charcon", function (res, err){
 })
 
 client.addListener('message', function (from, to, message) {
-
   var promise = checkForCommand(message)
   if(promise){
     promise.then(function(command) {
@@ -28,7 +22,6 @@ client.addListener('message', function (from, to, message) {
     }).catch(logError)
   }
   logMessage(from, message)
-
 });
 
 function checkForCommand(message) {
@@ -47,32 +40,29 @@ function logMessage(username, message) {
       .into('messages')
       .catch(logError)
   })
-
-
 }
 
-client.addListener('error', function(message) {
-    console.log('error: ', message);
-});
-
 function upsertUser(username, callback) {
-   knex('users')
-     .where('name', username)
-     .first()
-     .then(function (user){
-        if(user){
-          callback(user.id)
-        }
-        //if the user is not in users table, add them and then return their id
-        else {
-           knex.insert({name: username}, 'id')
-            .into('users')
-            .then(function(ids) {
-              callback(ids[0])
-            })
+  knex('users')
+    .where('name', username)
+    .first()
+    .then(function (user){
+      if(user){
+        callback(user.id)
+      } else {
+      //if the user is not in users table, add them and then perform callback with their id
+        knex.insert({name: username}, 'id')
+          .into('users')
+          .then(function(ids) {
+            callback(ids[0])
+          })
         }
     })
 }
+
+client.addListener('error', function(message) {
+  console.log('error: ', message);
+});
 
 function logError(err) {
   console.log(err)
