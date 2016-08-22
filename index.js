@@ -2,41 +2,69 @@ var irc = require('irc');
 var passwords = require('./password')
 var config = require('./knexfile').development
 var knex = require('knex')(config)
+var cron = require('node-cron')
 
-var client = new irc.Client('irc.chat.twitch.tv', 'LucidityBot', {
-  channels: ['#Charcon'],
-  password: passwords.twitchPassword,
-});
+var client
 
-client.join("#Charcon", function (res, err){
-  client.say("#Charcon", "Hello there, I'm LucidityBot!")
+function init(){
+  console.log("Hudsonbot 1.0 reporting for duty!");
+
+  client = new irc.Client('irc.chat.twitch.tv', 'LucidityBot', {
+    channels: ['#Charcon'],
+    password: passwords.twitchPassword,
+  });
+
+  client.addListener('message', function (from, channel, message) {
+    logMessage(from, channel, message)
+    var match = message.match(/!(\w+)/)
+    if(match){
+      processCommmand(message, match[1])
+    }else{
+      checkForTriggerPhrase(message)
+    }
+  });
+
+  client.addListener('error', function(message) {
+    console.log('error: ', message);
+  });
+}
+
+cron.schedule('0 */15 * * * *', function() {
+  console.log('a thing happened');
 })
 
-client.addListener('message', function (from, to, message) {
-  var promise = checkForCommand(message)
-  if(promise){
-    promise.then(function(command) {
-      if(command) {
-        client.say("#Charcon", command.response)
-      }
-    }).catch(logError)
-  }
-  logMessage(from, message)
-});
-
-function checkForCommand(message) {
-  var match = message.match(/!(\w+)/)
-  if (match){
-    firstWord = match[1]
-    return knex('commands')
-    .where('name', firstWord)
+function processCommmand(message, command) {
+  knex('commands')
+    .where({
+      name: command,
+      trigger: 'false'
+    })
     .first()
+    .then(runCommand)
+}
+
+function checkForTriggerPhrase(message){
+  knex('commands')
+    .where('trigger', true)
+    .then(function(rows) {
+      var command = rows.find(function(row) {
+        return message.match(row.name)
+      })
+      if(command){
+        runCommand(command)
+      }
+    })
+}
+
+function runCommand(command){
+  if(command) {
+    client.say("#Charcon", command.response)
   }
 }
 
-function logMessage(username, message) {
+function logMessage(username, channel,  message) {
   upsertUser(username, function(userId){
-    knex.insert({text: message, user_id: userId})
+    knex.insert({text: message, user_id: userId, channel: channel})
       .into('messages')
       .catch(logError)
   })
@@ -60,10 +88,9 @@ function upsertUser(username, callback) {
     })
 }
 
-client.addListener('error', function(message) {
-  console.log('error: ', message);
-});
 
 function logError(err) {
   console.log(err)
 }
+
+init()
