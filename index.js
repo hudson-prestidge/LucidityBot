@@ -10,18 +10,18 @@ function init(){
   console.log("Hudsonbot 1.0 reporting for duty!");
 
   client = new irc.Client('irc.chat.twitch.tv', 'LucidityBot', {
-    channels: ['#Charcon'],
+    channels: ['#unexpectedbanana'],
     password: passwords.twitchPassword,
   });
 
   client.addListener('message', function (from, channel, message) {
     logMessage(from, channel, message)
-    var match = message.match(/!(\w+)/)
-    if(match){
-      processCommmand(message, match[1])
-    }else{
-      checkForTriggerPhrase(message)
-    }
+    // var match = message.match(/!(\w+)/)
+    // if(match){
+    //   processCommmand(message, match[1])
+    // }else{
+    //   checkForTriggerPhrase(message)
+    // }
   });
 
   client.addListener('error', function(message) {
