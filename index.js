@@ -7,7 +7,7 @@ var cron = require('node-cron')
 var client
 
 function init(){
-  console.log("Hudsonbot 1.0 reporting for duty!");
+  console.log("LucidityBot 1.0 reporting for duty!");
 
   client = new irc.Client('irc.chat.twitch.tv', 'LucidityBot', {
     channels: ['#unexpectedbanana'],
@@ -16,12 +16,12 @@ function init(){
 
   client.addListener('message', function (from, channel, message) {
     logMessage(from, channel, message)
-    // var match = message.match(/!(\w+)/)
-    // if(match){
-    //   processCommmand(message, match[1])
-    // }else{
-    //   checkForTriggerPhrase(message)
-    // }
+    var match = message.match(/!(\w+)/)
+    if(match){
+      processCommmand(message, match[1])
+    }else{
+      checkForTriggerPhrase(message)
+    }
   });
 
   client.addListener('error', function(message) {
@@ -30,7 +30,7 @@ function init(){
 }
 
 cron.schedule('0 */15 * * * *', function() {
-  console.log('a thing happened');
+  // client.say("#Charcon", '15 minutes has passed!')
 })
 
 function processCommmand(message, command) {
