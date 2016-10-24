@@ -30,7 +30,7 @@ exports.seed = function(knex, Promise) {
         knex('commands').insert({id: 23, name: "social", response: "Facebook: https://www.facebook.com/champloolara Random photos: http://instagram.com/champloo_lara Youtube: https://www.youtube.com/user/Rivonly Twitter : https://twitter.com/ChamplooLara"}),
         knex('commands').insert({id: 24, name: "song", response: "Song requests are on Thursday, esteemed associate! Your enquiry is most assuredly appreciated."}),
         knex('commands').insert({id: 25, name: "steam", response: "Steam name is : Champloo <3 (Alternatively, use this link: http://steamcommunity.com/profiles/76561198124875648/ )"}),
-        knex('commands').insert({id: 26, name: "song", response: "Song requests are on Thursday, esteemed associate! Your enquiry is most assuredly appreciated."}),
+        //knex('commands').insert({id: 26, name: "song", response: "Song requests are on Thursday, esteemed associate! Your enquiry is most assuredly appreciated."}),
         knex('commands').insert({id: 27, name: "playlist", response: "I try to use a variety of playlists from Spotify, but I get most of my songs from this playlist: http://open.spotify.com/user/rivantha/playlist/0Wh8ciQWapDCNxWqATP4Kd"}),
         knex('commands').insert({id: 28, name: "res", response: "Please respect the streamer and all users at all times. Thank you for cooperating with the Moderation Department! :)"}),
         knex('commands').insert({id: 29, name: "setup", response: "Lara's current setup is: Blue Yeti Mic, Logitech G500s Mouse, Tt eSPORTS Gaming Keyboard, GTX 770 Graphics Card, Intel Core i7 4790 , ASUS MAXIMUS Vii Hero Motherboard"}),
