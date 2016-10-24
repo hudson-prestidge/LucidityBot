@@ -36,7 +36,7 @@ exports.seed = function(knex, Promise) {
         knex('commands').insert({id: 29, name: "setup", response: "Lara's current setup is: Blue Yeti Mic, Logitech G500s Mouse, Tt eSPORTS Gaming Keyboard, GTX 770 Graphics Card, Intel Core i7 4790 , ASUS MAXIMUS Vii Hero Motherboard"}),
         knex('commands').insert({id: 30, name: "server", response: "Lara plays on the oceanic league of legends server!", trigger: true}),
         knex('commands').insert({id: 31, name: "marry", response: "I've already done some time.", trigger: true}),
-        knex('commands').insert({id: 31, name: "bot", response: "Hiya! I'm LucidityBot or Luci for short. Some idiot made me for no good reason."})
+        knex('commands').insert({id: 32, name: "bot", response: "Hiya! I'm LucidityBot or Luci for short. Some idiot made me for no good reason."})
       ]);
     });
 };
