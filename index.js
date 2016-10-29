@@ -6,7 +6,7 @@ var cron = require('node-cron')
 
 var client
 
-function init(){
+init = () => {
   console.log("LucidityBot 1.0 reporting for duty!");
 
   client = new irc.Client('irc.chat.twitch.tv', 'LucidityBot', {
@@ -16,7 +16,7 @@ function init(){
 
   setScheduledCommands();
 
-  client.addListener('message', function (from, channel, message) {
+  client.addListener('message', (from, channel, message) => {
     logMessage(from, channel, message)
     var match = message.match(/!(\w+)/)
     if(match){
@@ -26,23 +26,26 @@ function init(){
     }
   })
 
-  client.addListener('error', function(message) {
+  client.addListener('error', message => {
     console.log('error: ', message);
   })
 }
 
-function setScheduledCommands() {
+var setScheduledCommands = () => {
   var scheduled_commands = []
   knex('scheduled_commands')
     .innerJoin('commands', 'scheduled_commands.command_id', 'commands.id')
-    .then(function(commands){
-      scheduled_commands = commands.map(function (command){
-        return setInterval( function(){runCommand(command)}, command.frequency*1000 )
+    .then(commands => {
+      scheduled_commands = commands.map(command => {
+        return setInterval( () => {runCommand(command)}, command.frequency*1000 )
       })
     })
 }
 
-function processCommmand(message, command) {
+var getSummonerRank = id => request('https://oce.api.pvp.net/api/lol/oce/v2.5/league/by-summoner/402614/entry?api_key=' + RIOT_GAMES_API_KEY)
+                              .end((err,res) => JSON.parse(res.text))
+
+var processCommmand = (message, command) => {
   knex('commands')
     .where({
       name: command,
@@ -52,45 +55,38 @@ function processCommmand(message, command) {
     .then(runCommand)
 }
 
-function checkForTriggerPhrase(message){
+var checkForTriggerPhrase = message => {
   knex('commands')
     .where('trigger', true)
-    .then(function(rows) {
-      var command = rows.find(function(row) {
-        return message.match(row.name)
-      })
+    .then(rows => {
+      var command = rows.find(row => message.match(row.name))
       if(command){
         runCommand(command)
       }
     })
 }
 
-function runCommand(command){
-  if(command) {
-    client.say("#Charcon", command.response)
-  }
-}
+var runCommand = command => if(command) { client.say("#Charcon", command.response) }
 
-function logMessage(username, channel,  message) {
-  upsertUser(username, function(userId){
+var logMessage = (username, channel,  message) => {
+  upsertUser(username, userId => {
     knex.insert({text: message, user_id: userId, channel: channel})
       .into('messages')
       .catch(logError)
   })
 }
 
-function upsertUser(username, callback) {
+var upsertUser = (username, callback) => {
   knex('users')
     .where('name', username)
     .first()
-    .then(function (user){
+    .then(user => {
       if(user){
         callback(user.id)
       } else {
-      //if the user is not in users table, add them and then perform callback with their id
         knex.insert({name: username}, 'id')
           .into('users')
-          .then(function(ids) {
+          .then(ids => {
             callback(ids[0])
           })
         }
@@ -98,8 +94,6 @@ function upsertUser(username, callback) {
 }
 
 
-function logError(err) {
-  console.log(err)
-}
+var logError = err => console.log(err)
 
 init()
