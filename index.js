@@ -3,6 +3,7 @@ var passwords = require('./password')
 var config = require('./knexfile').development
 var knex = require('knex')(config)
 var cron = require('node-cron')
+var request = require('superagent')
 
 var client
 
@@ -66,7 +67,19 @@ var checkForTriggerPhrase = message => {
     })
 }
 
-var runCommand = command => if(command) { client.say("#Charcon", command.response) }
+var runCommand = command => {
+  if(command.summoner) {
+    request("https://oce.api.pvp.net/api/lol/oce/v2.5/league/by-summoner/402614/entry?api_key=RGAPI-b09771b6-0dde-43cb-8654-eb6a894d71d8")
+      .end((err, res) => {
+        var summoner = JSON.parse(res.text)["402614"][0]
+        var {playerOrTeamName, division, leaguePoints} = summoner.entries[0]
+        var response = playerOrTeamName + " is currently " + summoner.tier + " " + division + " with " + leaguePoints + " points."
+        client.say("#Charcon", response)
+      })
+  } else {
+    client.say("#Charcon", command.response)
+  }
+}
 
 var logMessage = (username, channel,  message) => {
   upsertUser(username, userId => {
