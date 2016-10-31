@@ -4,8 +4,14 @@ var config = require('./knexfile').development
 var knex = require('knex')(config)
 var cron = require('node-cron')
 var request = require('superagent')
+var dotenv = require('dotenv')
+
+dotenv.load()
+
+var RIOT_GAMES_API_KEY = process.env.RIOT_GAMES_API_KEY
 
 var client
+
 
 init = () => {
   console.log("LucidityBot 1.0 reporting for duty!");
@@ -43,9 +49,6 @@ var setScheduledCommands = () => {
     })
 }
 
-var getSummonerRank = id => request('https://oce.api.pvp.net/api/lol/oce/v2.5/league/by-summoner/402614/entry?api_key=' + RIOT_GAMES_API_KEY)
-                              .end((err,res) => JSON.parse(res.text))
-
 var processCommmand = (message, command) => {
   knex('commands')
     .where({
@@ -69,10 +72,10 @@ var checkForTriggerPhrase = message => {
 
 var runCommand = command => {
   if(command.summoner) {
-    request("https://oce.api.pvp.net/api/lol/oce/v1.4/summoner/by-name/" + command.summoner + "?api_key=RGAPI-b09771b6-0dde-43cb-8654-eb6a894d71d8")
+    request("https://oce.api.pvp.net/api/lol/oce/v1.4/summoner/by-name/" + command.summoner + "?api_key=" + RIOT_GAMES_API_KEY)
       .end((err, res) => {
         var id = JSON.parse(res.text)[command.summoner].id
-        request("https://oce.api.pvp.net/api/lol/oce/v2.5/league/by-summoner/" +id + "/entry?api_key=RGAPI-b09771b6-0dde-43cb-8654-eb6a894d71d8")
+        request("https://oce.api.pvp.net/api/lol/oce/v2.5/league/by-summoner/" +id + "/entry?api_key=" + RIOT_GAMES_API_KEY)
           .end((err, res) => {
             var summoner = JSON.parse(res.text)["402614"][0]
             var {playerOrTeamName, division, leaguePoints} = summoner.entries[0]
@@ -80,11 +83,6 @@ var runCommand = command => {
             client.say("#Charcon", response)
           })
       })
-
-
-
-
-
   } else {
     client.say("#Charcon", command.response)
   }
