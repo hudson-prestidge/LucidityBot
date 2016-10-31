@@ -69,13 +69,22 @@ var checkForTriggerPhrase = message => {
 
 var runCommand = command => {
   if(command.summoner) {
-    request("https://oce.api.pvp.net/api/lol/oce/v2.5/league/by-summoner/402614/entry?api_key=RGAPI-b09771b6-0dde-43cb-8654-eb6a894d71d8")
+    request("https://oce.api.pvp.net/api/lol/oce/v1.4/summoner/by-name/" + command.summoner + "?api_key=RGAPI-b09771b6-0dde-43cb-8654-eb6a894d71d8")
       .end((err, res) => {
-        var summoner = JSON.parse(res.text)["402614"][0]
-        var {playerOrTeamName, division, leaguePoints} = summoner.entries[0]
-        var response = playerOrTeamName + " is currently " + summoner.tier + " " + division + " with " + leaguePoints + " points."
-        client.say("#Charcon", response)
+        var id = JSON.parse(res.text)[command.summoner].id
+        request("https://oce.api.pvp.net/api/lol/oce/v2.5/league/by-summoner/" +id + "/entry?api_key=RGAPI-b09771b6-0dde-43cb-8654-eb6a894d71d8")
+          .end((err, res) => {
+            var summoner = JSON.parse(res.text)["402614"][0]
+            var {playerOrTeamName, division, leaguePoints} = summoner.entries[0]
+            var response = playerOrTeamName + " is currently " + summoner.tier + " " + division + " with " + leaguePoints + " points."
+            client.say("#Charcon", response)
+          })
       })
+
+
+
+
+
   } else {
     client.say("#Charcon", command.response)
   }
